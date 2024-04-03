@@ -1,7 +1,8 @@
 2023-2024
+
 BUT Lyon 2
-1ere année
+First year
 
 R_lessons
 
-Ensemble des TP/TD
+All lessons and exercises
