@@ -12,6 +12,7 @@ df <- read.csv(file = "nba2014_2015.csv", sep = ";",
 > df$SHOOTER = as.factor(df$shooter)
 
 
+
 # CORRECTION 1
 
 df = read.csv(file = "nba2014_2015.csv", sep = ",",
@@ -19,7 +20,6 @@ df = read.csv(file = "nba2014_2015.csv", sep = ",",
 > nrow(df)
 > ncol(df)
 > colnames(df)
-> srt(df)
 > df$PERIOD = as.factor(df$PERIOD)
 > df$PTS_TYPE = as.factor(df$PTS_TYPE)
 > df$SHOOTER = as.factor(df$SHOOTER)
@@ -112,6 +112,38 @@ df_top5 <-  df_total_tri[  5  ,  ]
 
 
 
+
+# CORRECTION 3
+
+#Les 100 tirs réussis ou manqués les plus loin
+rang = order(df$SHOT_DIST, decreasing = TRUE)
+df3 = df[rang,]
+df3 = df3[ 1 : 100 , ]
+
+#Les 100 tirs réussis les plus loin
+rang=order(df$SHOT_DIST, decreasing = TRUE)
+df4 = df[rang,]
+df4 = subset(df4, SHOT_RESULT == "made")
+df4 = df4[ 1 : 100 , ]
+
+#Combien de tirs à 3 points a réussi Kobe Bryant ?
+df_kobe = subset(df,SHOT_RESULT == "made" &
+                   PTS_TYPE == 3 & 
+                   SHOOTER == "kobe bryant")
+
+dim(df_kobe)
+
+#Le TOP5 des joueurs qui ont marqués le plus de points dans la saison
+df$PTS_MARQUES = ifelse(df$SHOT_RESULT == "made", yes = df$PTS_TYPE, 0)
+df_total = aggregate(PTS_MARQUES ~ SHOOTER, data = df, FUN = function(x)sum(x))
+df_total_tri = df_total[order(df_total$PTS_MARQUES,decreasing = TRUE),]
+df_top5 = df_total_tri[  5  ,  ]
+
+
+
+
+
+
 # ERREURS 4
 
 #Des graphiques adaptés selon le type de variable
@@ -132,3 +164,27 @@ for (colonne in colnames(df) {
   build_graph(une_colonne = df[colonne , ] , nom_colonne = colone)
 }
 }
+
+
+
+# CORRECTION 4
+
+#Des graphiques adaptés selon le type de variable
+
+#construction de la fonction
+build_graph <- function(une_colonne, nom_colonne) {
+  if(is.numeric(une_colonne)) {
+    print(boxplot(une_colonne, main = nom_colonne))
+  }  else if (is.factor(une_colonne)) {
+    tri <- table(une_colonne)
+    print(barplot(tri, main = nom_colonne))
+  }
+  
+  #on déroule la fonction sur chaque colonne du data frame.
+  
+  for (colonne in colnames(df)) {
+    build_graph(une_colonne = df[,colonne  ] , nom_colonne = colone)
+  }
+}
+
+build_graph()
